@@ -294,19 +294,48 @@ footer{padding:40px 24px;border-top:1px solid rgba(204,255,0,.08);text-align:cen
     </div>
   </section>
 
-  <!-- COUNTDOWN -->
+    <!-- COUNTDOWN -->
   <div class="cd-section">
     <p class="cd-label">Offer Ends In</p>
     <div class="countdown">
-      <div class="cd-unit"><div class="cd-num" id="cd-d">00</div><div class="cd-lbl">Days</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-days">00</div><div class="cd-lbl">Days</div></div>
       <div class="cd-sep">:</div>
-      <div class="cd-unit"><div class="cd-num" id="cd-h">00</div><div class="cd-lbl">Hours</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-hours">00</div><div class="cd-lbl">Hours</div></div>
       <div class="cd-sep">:</div>
-      <div class="cd-unit"><div class="cd-num" id="cd-m">00</div><div class="cd-lbl">Mins</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-minutes">00</div><div class="cd-lbl">Minutes</div></div>
       <div class="cd-sep">:</div>
-      <div class="cd-unit"><div class="cd-num" id="cd-s">00</div><div class="cd-lbl">Secs</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-seconds">00</div><div class="cd-lbl">Seconds</div></div>
     </div>
   </div>
+  <script>
+  (function() {
+    var KEY = 'ipov_countdown_v5';
+    var DURATION = 24 * 60 * 60 * 1000;
+    function getDeadline() {
+      var stored = localStorage.getItem(KEY);
+      var now = Date.now();
+      if (!stored || parseInt(stored) <= now) {
+        var next = now + DURATION;
+        localStorage.setItem(KEY, next);
+        return next;
+      }
+      return parseInt(stored);
+    }
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      var now = Date.now();
+      var deadline = getDeadline();
+      var diff = deadline - now;
+      if (diff <= 0) { localStorage.removeItem(KEY); diff = 0; }
+      document.getElementById('cd-days').textContent    = pad(Math.floor(diff / 86400000));
+      document.getElementById('cd-hours').textContent   = pad(Math.floor((diff % 86400000) / 3600000));
+      document.getElementById('cd-minutes').textContent = pad(Math.floor((diff % 3600000) / 60000));
+      document.getElementById('cd-seconds').textContent = pad(Math.floor((diff % 60000) / 1000));
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+  </script>
 
   <!-- WHAT YOU'LL LEARN -->
   <section class="learn-section">
@@ -830,19 +859,7 @@ function showPage(name) {
   setTimeout(initReveal, 80);
 }
 
-// COUNTDOWN
-const key = 'ipov_dl_v4';
-let dl = localStorage.getItem(key);
-if (!dl) { dl = Date.now() + 48 * 3600000; localStorage.setItem(key, dl); }
-const fmt = n => String(n).padStart(2, '0');
-function tick() {
-  const diff = Math.max(0, dl - Date.now());
-  document.getElementById('cd-d').textContent = fmt(Math.floor(diff / 86400000));
-  document.getElementById('cd-h').textContent = fmt(Math.floor(diff % 86400000 / 3600000));
-  document.getElementById('cd-m').textContent = fmt(Math.floor(diff % 3600000 / 60000));
-  document.getElementById('cd-s').textContent = fmt(Math.floor(diff % 60000 / 1000));
-}
-tick(); setInterval(tick, 1000);
+// Countdown handled inline above countdown section
 
 // SCROLL REVEAL
 function initReveal() {
